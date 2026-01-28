@@ -4,7 +4,8 @@
 // A mettre le 27 Fevrier 2026
 /////////////////////////////////////////////////////////
 
-#define LOG_IMAGE true
+#define LOG_HISTO false
+#define LOG_HISTO_CUMUL true
 
 #include <print>
 #include <span>
@@ -21,7 +22,7 @@ namespace
 	[[nodiscard]] HistInfo CalculHistogramme(const ImageInfo& imageInfo)
 	{
 		const size_t imageSize = static_cast<size_t>(imageInfo.tailleX) * static_cast<size_t>(imageInfo.tailleY);
-		const span imageDatas{imageInfo.data, imageSize};
+		const span imageDatas{ imageInfo.data, imageSize };
 
 		HistInfo histInfo{};
 		for (const auto data : imageDatas)
@@ -29,7 +30,8 @@ namespace
 			++histInfo.histogramme[data];
 		}
 
-#if LOG_IMAGE
+#if LOG_HISTO
+		std::print("Log histo value:\n");
 		for (size_t i = 0; const auto histoValue : histInfo.histogramme)
 			std::print("Grey channel {} value: {}\n", i++, histoValue);
 #endif
@@ -37,8 +39,25 @@ namespace
 		return histInfo; // https://azer.io/image-histogram/ to check if it's correct
 	}
 
-	void CalculHistogrammeCumulatif(const ImageInfo& imageInfo, HistogramType* outHistogrammeCumulatif)
+	// J'ai change pour prendre l'histogramme de base en parametre plutot que l'image
+	[[nodiscard]] HistogramType CalculHistogrammeCumulatif(const HistogramType& baseHisto)
 	{
+		size_t i = 0;
+		HistogramType histoCumulatif{};
+		
+		histoCumulatif[i++] = 0;
+		for (; i < baseHisto.size(); ++i)
+		{
+			histoCumulatif[i] = histoCumulatif[i - 1] + baseHisto[i];
+		}
+
+#if LOG_HISTO_CUMUL
+		std::print("Log histo cumul value:\n");
+		for (i = 0; const auto histoValue : histoCumulatif)
+			std::print("Grey channel {} value: {}\n", i++, histoValue);
+#endif
+
+		return histoCumulatif;
 	}
 }
 
@@ -66,8 +85,7 @@ int main()
 	const HistInfo histInfo = baseHistInfo;
 
 	// 3a - Calculer l'histogramme cumulatif a partir de l'image orignal en sRGB
-	HistogramType histoCumulatif;
-	CalculHistogrammeCumulatif(imageInfo, &histoCumulatif);
+	const HistogramType histoCumulatif = CalculHistogrammeCumulatif(baseHistInfo.histogramme);
 
 	// 3b - Appliquer une transformation d'egalisation d'histogramme.
 
