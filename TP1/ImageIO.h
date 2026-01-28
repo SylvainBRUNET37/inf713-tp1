@@ -1,6 +1,8 @@
 #ifndef IMAGE_IO_H
 #define IMAGE_IO_H
 
+#include <optional>
+
 struct ImageInfo;
 
 namespace ImageIO
@@ -11,7 +13,7 @@ namespace ImageIO
 	// - imageInfo : recevera le contenue de l'image lue sur le disque
 	// en sortie
 	// 0 indique un echec. != 0 indique un succes.
-	[[nodiscard]] bool LireImage(const char* filename, ImageInfo* outImageInfo);
+	[[nodiscard]] std::optional<ImageInfo> LireImage(const char* filename);
 
 	// EcrireImage
 	// en entree

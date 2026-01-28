@@ -7,8 +7,7 @@
 struct HistInfo
 {
 	static constexpr size_t HISTOGRAMME_SIZE = 256;
-	using value_type = uint32_t;
-	using HistogramType = std::array<value_type, HISTOGRAMME_SIZE>;
+	using HistogramType = std::array<uint32_t, HISTOGRAMME_SIZE>;
 
 	HistogramType histogramme;
 	float moyenne;
@@ -20,7 +19,9 @@ struct HistInfo
 
 struct ImageInfo
 {
-	uint8_t* data{};
+	using DataType = uint8_t;
+
+	DataType* data{};
 	int tailleX{}; // nb de pixel en X
 	int tailleY{}; // nb de pixel en Y
 	int nbCanaux{}; // nb de canaux par pixel. Ici 1, parce que l'image est en noir et blanc

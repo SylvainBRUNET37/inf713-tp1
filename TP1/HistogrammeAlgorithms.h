@@ -5,7 +5,6 @@
 
 namespace HistogrammeAlgorithms
 {
-	// TODO: compute meta datas if needed
 	[[nodiscard]] HistInfo CalculHistogramme(const ImageInfo& imageInfo);
 
 	// J'ai change pour prendre l'histogramme de base en parametre plutot que l'image

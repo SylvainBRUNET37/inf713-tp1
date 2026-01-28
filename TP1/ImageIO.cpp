@@ -7,21 +7,22 @@
 
 #include "Data.h"
 
-bool ImageIO::LireImage(const char* filename, ImageInfo* outImageInfo)
+std::optional<ImageInfo> ImageIO::LireImage(const char* const filename)
 {
+	using namespace std;
+
 	assert(filename);
-	assert(outImageInfo);
 
-	// Nombre de canaux desirer. Si la valeur est 0, retourne le nombre de
-	// canaux dans l'image.
-	constexpr int nbCanauxDesire = 0;
-	outImageInfo->data = stbi_load(filename, &outImageInfo->tailleX, &outImageInfo->tailleY,
-	                               &outImageInfo->nbCanaux, nbCanauxDesire);
+	// Nombre de canaux desirer. Si la valeur est 0, retourne le nombre de canaux dans l'image.
+	static constexpr int nbCanauxDesire = 0;
+	ImageInfo imageInfo{};
+	imageInfo.data = stbi_load(filename, &imageInfo.tailleX, &imageInfo.tailleY,
+	                           &imageInfo.nbCanaux, nbCanauxDesire);
 
-	return outImageInfo->data ? true : false;
+	return imageInfo.data ? optional{imageInfo} : nullopt;
 }
 
-bool ImageIO::EcrireImage(const ImageInfo& imageInfo, const char* filename)
+bool ImageIO::EcrireImage(const ImageInfo& imageInfo, const char* const filename)
 {
 	assert(filename);
 

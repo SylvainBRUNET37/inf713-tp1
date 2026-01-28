@@ -11,48 +11,54 @@
 #include "ImageIO.h"
 #include "HistogrammeAlgorithms.h"
 
-using namespace std;
-using HistogramType = HistInfo::HistogramType;
-
 int main()
 {
+	using namespace std;
+	using HistogramType = HistInfo::HistogramType;
+
 	/////////////////////////////////////////////////////////
 	// Charger une image en memoire
 	/////////////////////////////////////////////////////////
 	static constexpr auto inputFileName = "barbara.png";
-	ImageInfo imageInfo;
-	if (not ImageIO::LireImage(inputFileName, &imageInfo))
+	const auto imageInfo = ImageIO::LireImage(inputFileName);
+	if (not imageInfo)
 	{
-		std::print("Erreur de lecture de l'image {}", inputFileName);
+		cerr << format("Erreur de lecture de l'image {}", inputFileName);
 		return EXIT_FAILURE;
 	}
 
 	/////////////////////////////////////////////////////////
-	// Traitement de l'image
+	// Traitement de l'image (1)
 	/////////////////////////////////////////////////////////
 
 	// 1 - Calculer l'histogramme de la photos. implementer la fonction suivante.
-	const HistInfo baseHistInfo = HistogrammeAlgorithms::CalculHistogramme(imageInfo);
+	const HistInfo baseHistInfo = HistogrammeAlgorithms::CalculHistogramme(*imageInfo);
 
-	// 2 - Faite une copie des donnees et travailler sur cette copie pour l'etape 3.
-	const HistInfo histInfo = baseHistInfo;
-
-	// 3a - Calculer l'histogramme cumulatif a partir de l'image orignal en sRGB
-	HistogramType histoCumulatif = HistogrammeAlgorithms::CalculHistogrammeCumulatif(baseHistInfo.histogramme);
-
-	// 3b - Appliquer une transformation d'egalisation d'histogramme.
-	const size_t imageSize = static_cast<size_t>(imageInfo.tailleX) * static_cast<size_t>(imageInfo.tailleY);
-	HistogrammeAlgorithms::ApplyEqualisation(histoCumulatif, imageSize);
-
-	// 3c - Sauvegarder l'image sous le nom de "barbara_equalized.png"
-	static constexpr auto outputFileName = "barbara_equalized.png";
-	const ImageInfo image = HistogrammeAlgorithms::CreateEqualisedImage(imageInfo, histoCumulatif);
-
-	if (not ImageIO::EcrireImage(image, outputFileName))
 	{
-		cerr << "Equalised image writting failed\n";
-		return EXIT_FAILURE;
+		// 2 - Faite une copie des donnees et travailler sur cette copie pour l'etape 3.
+		const HistInfo histInfo = baseHistInfo;
+
+		// 3a - Calculer l'histogramme cumulatif a partir de l'image orignal en sRGB
+		HistogramType histoCumulatif = HistogrammeAlgorithms::CalculHistogrammeCumulatif(histInfo.histogramme);
+
+		// 3b - Appliquer une transformation d'egalisation d'histogramme.
+		const size_t imageSize = static_cast<size_t>(imageInfo->tailleX) * static_cast<size_t>(imageInfo->tailleY);
+		HistogrammeAlgorithms::ApplyEqualisation(histoCumulatif, imageSize);
+
+		// 3c - Sauvegarder l'image sous le nom de "barbara_equalized.png"
+		static constexpr auto outputFileName = "barbara_equalized.png";
+		const ImageInfo image = HistogrammeAlgorithms::CreateEqualisedImage(*imageInfo, histoCumulatif);
+
+		if (not ImageIO::EcrireImage(image, outputFileName))
+		{
+			cerr << format("Failed to write equalised image in file {}\n", outputFileName);
+			return EXIT_FAILURE;
+		}
 	}
+
+	/////////////////////////////////////////////////////////
+	// Traitement de l'image (2)
+	/////////////////////////////////////////////////////////
 
 	// 4a - A partir de l'image original, faite une transformation de sRGB a lineaire (faite la vraie transformation)
 

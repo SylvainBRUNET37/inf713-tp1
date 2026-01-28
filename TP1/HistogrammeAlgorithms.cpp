@@ -9,16 +9,17 @@
 
 #define LOG_HISTO false
 #define LOG_HISTO_CUMUL false
-#define LOG_HISTO_EGAL false
+#define LOG_HISTO_EQUALISED false
 
 using namespace std;
 using HistogramType = HistInfo::HistogramType;
+using ImageDataType = ImageInfo::DataType;
 
 //
 
 namespace
 {
-	void LogHistogramme(const string_view message, const HistogramType& histo)
+	[[maybe_unused]] void LogHistogramme(const string_view message, const HistogramType& histo)
 	{
 		print("{}:\n", message);
 		for (size_t i = 0; const auto histoValue : histo)
@@ -28,11 +29,11 @@ namespace
 	}
 
 
-	[[nodiscard]] span<unsigned char> CreateImageDataSpan(const ImageInfo& imageInfo)
+	[[nodiscard]] span<ImageDataType> CreateImageDataSpan(const ImageInfo& imageInfo)
 	{
 		const size_t imageSize = static_cast<size_t>(imageInfo.tailleX) * static_cast<size_t>(imageInfo.tailleY);
 
-		return span{ imageInfo.data, imageSize };
+		return span{imageInfo.data, imageSize};
 	}
 }
 
@@ -43,7 +44,7 @@ HistInfo HistogrammeAlgorithms::CalculHistogramme(const ImageInfo& imageInfo)
 	const span imageDatas = CreateImageDataSpan(imageInfo);
 
 	HistInfo histInfo{};
-	for (const unsigned char data : imageDatas)
+	for (const ImageDataType data : imageDatas)
 	{
 		++histInfo.histogramme[data];
 	}
@@ -78,27 +79,29 @@ void HistogrammeAlgorithms::ApplyEqualisation(HistInfo::HistogramType& histo, co
 	static constexpr size_t MAX_VALUE = HistInfo::HISTOGRAMME_SIZE - 1; // K - 1
 
 	assert(imageSize > 0 && "Image size cannot be 0");
+
 	for (unsigned int& histoData : histo)
 	{
 		histoData = histoData * MAX_VALUE / imageSize;
 	}
 
-#if LOG_HISTO_EGAL
-	LogHistogramme("Log histo egal value", histo);
+#if LOG_HISTO_EQUALISED
+	LogHistogramme("Log histo equalised value", histo);
 #endif
 }
 
-ImageInfo HistogrammeAlgorithms::CreateEqualisedImage(const ImageInfo& baseImageInfo, const HistInfo::HistogramType& equalisedHisto)
+ImageInfo HistogrammeAlgorithms::CreateEqualisedImage(const ImageInfo& baseImageInfo,
+                                                      const HistInfo::HistogramType& equalisedHisto)
 {
-	const ImageInfo finalImageInfo{baseImageInfo};
+	const ImageInfo equalisedImageInfo{baseImageInfo};
 
 	const span baseImageDatas = CreateImageDataSpan(baseImageInfo);
-	const span finalImageDatas = CreateImageDataSpan(baseImageInfo);
+	const span equalisedImageDatas = CreateImageDataSpan(baseImageInfo);
 
-	for (auto [baseData, finalData] : views::zip(baseImageDatas, finalImageDatas))
+	for (auto [baseData, equalisedData] : views::zip(baseImageDatas, equalisedImageDatas))
 	{
-		finalData = static_cast<unsigned char>(equalisedHisto[baseData]);
+		equalisedData = static_cast<ImageDataType>(equalisedHisto[baseData]);
 	}
 
-	return finalImageInfo; // https://pinetools.com/equalize-image to check if it's correct
+	return equalisedImageInfo; // https://pinetools.com/equalize-image to check if it's correct
 }
