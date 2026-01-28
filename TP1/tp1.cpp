@@ -5,6 +5,7 @@
 /////////////////////////////////////////////////////////
 
 #include <print>
+#include <iostream>
 
 #include "Data.h"
 #include "ImageIO.h"
@@ -18,11 +19,11 @@ int main()
 	/////////////////////////////////////////////////////////
 	// Charger une image en memoire
 	/////////////////////////////////////////////////////////
-	constexpr auto filename = "barbara.png";
+	static constexpr auto inputFileName = "barbara.png";
 	ImageInfo imageInfo;
-	if (not ImageIO::LireImage(filename, &imageInfo))
+	if (not ImageIO::LireImage(inputFileName, &imageInfo))
 	{
-		std::print("Erreur de lecture de l'image {}", filename);
+		std::print("Erreur de lecture de l'image {}", inputFileName);
 		return EXIT_FAILURE;
 	}
 
@@ -41,9 +42,17 @@ int main()
 
 	// 3b - Appliquer une transformation d'egalisation d'histogramme.
 	const size_t imageSize = static_cast<size_t>(imageInfo.tailleX) * static_cast<size_t>(imageInfo.tailleY);
-	HistogrammeAlgorithms::ApplyEgalisation(histoCumulatif, imageSize);
+	HistogrammeAlgorithms::ApplyEqualisation(histoCumulatif, imageSize);
 
 	// 3c - Sauvegarder l'image sous le nom de "barbara_equalized.png"
+	static constexpr auto outputFileName = "barbara_equalized.png";
+	const ImageInfo image = HistogrammeAlgorithms::CreateEqualisedImage(imageInfo, histoCumulatif);
+
+	if (not ImageIO::EcrireImage(image, outputFileName))
+	{
+		cerr << "Equalised image writting failed\n";
+		return EXIT_FAILURE;
+	}
 
 	// 4a - A partir de l'image original, faite une transformation de sRGB a lineaire (faite la vraie transformation)
 
@@ -55,5 +64,5 @@ int main()
 
 	// 4e - Sauvegarder le result de 4d sous le nom "barbara_modified.png"
 
-	return 0;
+	return EXIT_SUCCESS;
 }

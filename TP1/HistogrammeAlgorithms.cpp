@@ -3,12 +3,13 @@
 #include <cassert>
 #include <print>
 #include <span>
+#include <ranges>
 
 #include "Data.h"
 
 #define LOG_HISTO false
 #define LOG_HISTO_CUMUL false
-#define LOG_HISTO_EGAL true
+#define LOG_HISTO_EGAL false
 
 using namespace std;
 using HistogramType = HistInfo::HistogramType;
@@ -19,11 +20,19 @@ namespace
 {
 	void LogHistogramme(const string_view message, const HistogramType& histo)
 	{
-		std::print("{}:\n", message);
+		print("{}:\n", message);
 		for (size_t i = 0; const auto histoValue : histo)
 		{
-			std::print("Grey channel {} value: {}\n", i++, histoValue);
+			print("Grey channel {} value: {}\n", i++, histoValue);
 		}
+	}
+
+
+	[[nodiscard]] span<unsigned char> CreateImageDataSpan(const ImageInfo& imageInfo)
+	{
+		const size_t imageSize = static_cast<size_t>(imageInfo.tailleX) * static_cast<size_t>(imageInfo.tailleY);
+
+		return span{ imageInfo.data, imageSize };
 	}
 }
 
@@ -31,11 +40,10 @@ namespace
 
 HistInfo HistogrammeAlgorithms::CalculHistogramme(const ImageInfo& imageInfo)
 {
-	const size_t imageSize = static_cast<size_t>(imageInfo.tailleX) * static_cast<size_t>(imageInfo.tailleY);
-	const span imageDatas{ imageInfo.data, imageSize };
+	const span imageDatas = CreateImageDataSpan(imageInfo);
 
 	HistInfo histInfo{};
-	for (const auto data : imageDatas)
+	for (const unsigned char data : imageDatas)
 	{
 		++histInfo.histogramme[data];
 	}
@@ -65,12 +73,12 @@ HistInfo::HistogramType HistogrammeAlgorithms::CalculHistogrammeCumulatif(const 
 	return histoCumulatif;
 }
 
-void HistogrammeAlgorithms::ApplyEgalisation(HistInfo::HistogramType& histo, const size_t imageSize)
+void HistogrammeAlgorithms::ApplyEqualisation(HistInfo::HistogramType& histo, const size_t imageSize)
 {
 	static constexpr size_t MAX_VALUE = HistInfo::HISTOGRAMME_SIZE - 1; // K - 1
 
 	assert(imageSize > 0 && "Image size cannot be 0");
-	for (auto& histoData : histo)
+	for (unsigned int& histoData : histo)
 	{
 		histoData = histoData * MAX_VALUE / imageSize;
 	}
@@ -78,4 +86,19 @@ void HistogrammeAlgorithms::ApplyEgalisation(HistInfo::HistogramType& histo, con
 #if LOG_HISTO_EGAL
 	LogHistogramme("Log histo egal value", histo);
 #endif
+}
+
+ImageInfo HistogrammeAlgorithms::CreateEqualisedImage(const ImageInfo& baseImageInfo, const HistInfo::HistogramType& equalisedHisto)
+{
+	const ImageInfo finalImageInfo{baseImageInfo};
+
+	const span baseImageDatas = CreateImageDataSpan(baseImageInfo);
+	const span finalImageDatas = CreateImageDataSpan(baseImageInfo);
+
+	for (auto [baseData, finalData] : views::zip(baseImageDatas, finalImageDatas))
+	{
+		finalData = static_cast<unsigned char>(equalisedHisto[baseData]);
+	}
+
+	return finalImageInfo; // https://pinetools.com/equalize-image to check if it's correct
 }

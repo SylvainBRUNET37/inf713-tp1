@@ -20,14 +20,10 @@ struct HistInfo
 
 struct ImageInfo
 {
-	ImageInfo() : data(nullptr), tailleX(0), tailleY(0), nbCanaux(0)
-	{
-	}
-
-	uint8_t* data;
-	int tailleX; // nb de pixel en X
-	int tailleY; // nb de pixel en Y
-	int nbCanaux; // nb de canaux par pixel. Ici 1, parce que l'image est en noir et blanc
+	uint8_t* data{};
+	int tailleX{}; // nb de pixel en X
+	int tailleY{}; // nb de pixel en Y
+	int nbCanaux{}; // nb de canaux par pixel. Ici 1, parce que l'image est en noir et blanc
 };
 
 #endif
