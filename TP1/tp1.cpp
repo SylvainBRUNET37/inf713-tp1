@@ -4,62 +4,14 @@
 // A mettre le 27 Fevrier 2026
 /////////////////////////////////////////////////////////
 
-#define LOG_HISTO false
-#define LOG_HISTO_CUMUL true
-
 #include <print>
-#include <span>
 
 #include "Data.h"
 #include "ImageIO.h"
+#include "HistogrammeAlgorithms.h"
 
 using namespace std;
 using HistogramType = HistInfo::HistogramType;
-
-namespace
-{
-	// TODO: compute meta datas
-	[[nodiscard]] HistInfo CalculHistogramme(const ImageInfo& imageInfo)
-	{
-		const size_t imageSize = static_cast<size_t>(imageInfo.tailleX) * static_cast<size_t>(imageInfo.tailleY);
-		const span imageDatas{ imageInfo.data, imageSize };
-
-		HistInfo histInfo{};
-		for (const auto data : imageDatas)
-		{
-			++histInfo.histogramme[data];
-		}
-
-#if LOG_HISTO
-		std::print("Log histo value:\n");
-		for (size_t i = 0; const auto histoValue : histInfo.histogramme)
-			std::print("Grey channel {} value: {}\n", i++, histoValue);
-#endif
-
-		return histInfo; // https://azer.io/image-histogram/ to check if it's correct
-	}
-
-	// J'ai change pour prendre l'histogramme de base en parametre plutot que l'image
-	[[nodiscard]] HistogramType CalculHistogrammeCumulatif(const HistogramType& baseHisto)
-	{
-		size_t i = 0;
-		HistogramType histoCumulatif{};
-		
-		histoCumulatif[i++] = 0;
-		for (; i < baseHisto.size(); ++i)
-		{
-			histoCumulatif[i] = histoCumulatif[i - 1] + baseHisto[i];
-		}
-
-#if LOG_HISTO_CUMUL
-		std::print("Log histo cumul value:\n");
-		for (i = 0; const auto histoValue : histoCumulatif)
-			std::print("Grey channel {} value: {}\n", i++, histoValue);
-#endif
-
-		return histoCumulatif;
-	}
-}
 
 int main()
 {
@@ -79,15 +31,17 @@ int main()
 	/////////////////////////////////////////////////////////
 
 	// 1 - Calculer l'histogramme de la photos. implementer la fonction suivante.
-	const HistInfo baseHistInfo = CalculHistogramme(imageInfo);
+	const HistInfo baseHistInfo = HistogrammeAlgorithms::CalculHistogramme(imageInfo);
 
 	// 2 - Faite une copie des donnees et travailler sur cette copie pour l'etape 3.
 	const HistInfo histInfo = baseHistInfo;
 
 	// 3a - Calculer l'histogramme cumulatif a partir de l'image orignal en sRGB
-	const HistogramType histoCumulatif = CalculHistogrammeCumulatif(baseHistInfo.histogramme);
+	HistogramType histoCumulatif = HistogrammeAlgorithms::CalculHistogrammeCumulatif(baseHistInfo.histogramme);
 
 	// 3b - Appliquer une transformation d'egalisation d'histogramme.
+	const size_t imageSize = static_cast<size_t>(imageInfo.tailleX) * static_cast<size_t>(imageInfo.tailleY);
+	HistogrammeAlgorithms::ApplyEgalisation(histoCumulatif, imageSize);
 
 	// 3c - Sauvegarder l'image sous le nom de "barbara_equalized.png"
 

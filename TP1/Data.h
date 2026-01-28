@@ -7,7 +7,8 @@
 struct HistInfo
 {
 	static constexpr size_t HISTOGRAMME_SIZE = 256;
-	using HistogramType = std::array<uint32_t, HISTOGRAMME_SIZE>;
+	using value_type = uint32_t;
+	using HistogramType = std::array<value_type, HISTOGRAMME_SIZE>;
 
 	HistogramType histogramme;
 	float moyenne;

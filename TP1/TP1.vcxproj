@@ -151,12 +151,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="HistogrammeAlgorithms.cpp" />
     <ClCompile Include="ImageIO.cpp" />
     <ClCompile Include="stb_implementation.cpp" />
     <ClCompile Include="tp1.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Data.h" />
+    <ClInclude Include="HistogrammeAlgorithms.h" />
     <ClInclude Include="ImageIO.h" />
     <ClInclude Include="stb_image_write.h" />
   </ItemGroup>
