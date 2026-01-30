@@ -10,6 +10,7 @@
 #include "Data.h"
 #include "ImageIO.h"
 #include "HistogrammeAlgorithms.h"
+#include "ImageTransformationAlgorithms.h"
 
 int main()
 {
@@ -47,9 +48,9 @@ int main()
 
 		// 3c - Sauvegarder l'image sous le nom de "barbara_equalized.png"
 		static constexpr auto outputFileName = "barbara_equalized.png";
-		const ImageInfo image = HistogrammeAlgorithms::CreateEqualisedImage(*imageInfo, histoCumulatif);
 
-		if (not ImageIO::EcrireImage(image, outputFileName))
+		if (not ImageIO::EcrireImage(
+			HistogrammeAlgorithms::CreateEqualisedImage(*imageInfo, histoCumulatif), outputFileName))
 		{
 			cerr << format("Failed to write equalised image in file {}\n", outputFileName);
 			return EXIT_FAILURE;
@@ -61,6 +62,7 @@ int main()
 	/////////////////////////////////////////////////////////
 
 	// 4a - A partir de l'image original, faite une transformation de sRGB a lineaire (faite la vraie transformation)
+	const ImageInfo linearisedImage = ImageTransformationAlgorithms::CreateLinearisedImage(*imageInfo);
 
 	// 4b - En lineaire, appliquer une transformation constraste f(a) = a * 1.2 sur le result de 4a
 
