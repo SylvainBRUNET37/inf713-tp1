@@ -12,7 +12,7 @@
 #define LOG_HISTO_CUMUL false
 #define LOG_HISTO_EQUALISED false
 
-HistInfo HistogrammeAlgorithms::CalculHistogramme(const ImageInfo<uint8_t>& imageInfo)
+HistInfo HistogrammeAlgorithms::CalculHistogramme(const ImageInfo& imageInfo)
 {
 	const auto imageDatas = Utils::CreateImageDataSpan(imageInfo);
 
@@ -63,7 +63,7 @@ void HistogrammeAlgorithms::ApplyEqualisation(HistInfo::HistogramType& histo, co
 #endif
 }
 
-void HistogrammeAlgorithms::EqualiseImage(const ImageInfo<uint8_t>& baseImageInfo,
+void HistogrammeAlgorithms::EqualiseImage(const ImageInfo& baseImageInfo,
                                                       const HistInfo::HistogramType& equalisedHisto)
 {
 	// https://pinetools.com/equalize-image to check if it's correct
@@ -72,6 +72,6 @@ void HistogrammeAlgorithms::EqualiseImage(const ImageInfo<uint8_t>& baseImageInf
 
 	for (auto& imageData : baseImageDatas)
 	{
-		imageData = static_cast<uint8_t>(equalisedHisto[imageData]);
+		imageData = static_cast<ImageInfo::DataType>(equalisedHisto[imageData]);
 	}
 }

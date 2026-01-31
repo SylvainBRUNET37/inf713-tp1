@@ -18,10 +18,9 @@ struct HistInfo
 	uint8_t mode;
 };
 
-template <typename T>
 struct ImageInfo
 {
-	using DataType = T;
+	using DataType = uint8_t;
 
 	DataType* data{};
 	int tailleX{}; // nb de pixel en X
@@ -29,6 +28,7 @@ struct ImageInfo
 	int nbCanaux{}; // nb de canaux par pixel. Ici 1, parce que l'image est en noir et blanc
 
 	ImageInfo() = default;
+
 	ImageInfo(const ImageInfo& other)
 		: tailleX(other.tailleX),
 		  tailleY(other.tailleY),
@@ -36,12 +36,14 @@ struct ImageInfo
 	{
 		if (other.data)
 		{
-			const size_t size = static_cast<size_t>(tailleX) * tailleY * nbCanaux;
+			const size_t size = GetDataSize();
 
 			data = new DataType[size];
-			std::copy(other.data, other.data + size, data);
+			std::copy_n(other.data, size, data);
 		}
 	}
+
+	[[nodiscard]] size_t GetDataSize() const noexcept { return static_cast<size_t>(tailleX) * tailleY * nbCanaux; }
 };
 
 #endif

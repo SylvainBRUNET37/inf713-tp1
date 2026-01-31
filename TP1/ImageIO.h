@@ -13,7 +13,7 @@ namespace ImageIO
 	// - imageInfo : recevera le contenue de l'image lue sur le disque
 	// en sortie
 	// 0 indique un echec. != 0 indique un succes.
-	[[nodiscard]] std::optional<ImageInfo<uint8_t>> LireImage(const char* filename);
+	[[nodiscard]] std::optional<ImageInfo> LireImage(const char* filename);
 
 	// EcrireImage
 	// en entree
@@ -21,7 +21,7 @@ namespace ImageIO
 	// - filename : le nom du fichier a ecrire sur le disque.
 	// en sortie
 	//  0 indique un echec. != 0 indique un succes.
-	[[nodiscard]] bool EcrireImage(const ImageInfo<uint8_t>& imageInfo, const char* filename);
+	[[nodiscard]] bool EcrireImage(const ImageInfo& imageInfo, const char* filename);
 }
 
 #endif

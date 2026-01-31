@@ -28,7 +28,7 @@ namespace
 	}
 }
 
-std::vector<double> ImageTransformationAlgorithms::CreateLinearisedImage(const ImageInfo<uint8_t>& baseImageInfo)
+std::vector<double> ImageTransformationAlgorithms::CreateLinearisedImage(const ImageInfo& baseImageInfo)
 {
 	static constexpr double MAGIC_NUMBER = 0.04045;
 
@@ -50,7 +50,7 @@ std::vector<double> ImageTransformationAlgorithms::CreateLinearisedImage(const I
 	return result;
 }
 
-void ImageTransformationAlgorithms::CreateSrbgImage(ImageInfo<uint8_t>& newImage, const std::vector<double>& baseImageInfo)
+void ImageTransformationAlgorithms::CreateSrbgImage(const ImageInfo& newImage, const std::vector<double>& baseImageInfo)
 {
 	static constexpr double MAGIC_NUMBER = 0.0031308;
 
@@ -66,25 +66,5 @@ void ImageTransformationAlgorithms::CreateSrbgImage(ImageInfo<uint8_t>& newImage
 		srgb = std::clamp(srgb, 0.0, 1.0);
 
 		newData = static_cast<uint8_t>(srgb * 255.0);
-	}
-}
-
-void ImageTransformationAlgorithms::ApplyContrast(const ImageInfo<double>& imageInfo, const double contrast)
-{
-	const auto baseImageDatas = Utils::CreateImageDataSpan(imageInfo);
-
-	for (auto& data : baseImageDatas)
-	{
-		data = data * contrast;
-	}
-}
-
-void ImageTransformationAlgorithms::ApplyShine(const ImageInfo<double>& imageInfo, const double shine)
-{
-	const auto baseImageDatas = Utils::CreateImageDataSpan(imageInfo);
-
-	for (auto& data : baseImageDatas)
-	{
-		data = data + shine;
 	}
 }
