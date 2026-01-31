@@ -1,5 +1,6 @@
 #include "ImageTransformationAlgorithms.h"
 
+#include <algorithm>
 #include <cmath>
 #include <ranges>
 

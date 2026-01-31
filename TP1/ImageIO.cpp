@@ -13,11 +13,11 @@ std::optional<ImageInfo> ImageIO::LireImage(const char* const filename)
 
 	// Nombre de canaux desirer. Si la valeur est 0, retourne le nombre de canaux dans l'image.
 	static constexpr int nbCanauxDesire = 0;
-	ImageInfo imageInfo{};
-	imageInfo.data = stbi_load(filename, &imageInfo.tailleX, &imageInfo.tailleY,
-	                           &imageInfo.nbCanaux, nbCanauxDesire);
+	int tailleX, tailleY, nbCanaux;
 
-	return imageInfo.data ? optional{imageInfo} : nullopt;
+	stbi_uc* const data = stbi_load(filename, &tailleX, &tailleY, &nbCanaux, nbCanauxDesire);
+
+	return data ? optional<ImageInfo>{in_place, data, tailleX, tailleY, nbCanaux} : nullopt;
 }
 
 bool ImageIO::EcrireImage(const ImageInfo& imageInfo, const char* const filename)

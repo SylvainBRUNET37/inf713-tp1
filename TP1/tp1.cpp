@@ -22,7 +22,7 @@ int main()
 	// Charger une image en memoire
 	/////////////////////////////////////////////////////////
 	static constexpr auto INPUT_FILE_NAME = "barbara.png";
-	auto imageInfo = ImageIO::LireImage(INPUT_FILE_NAME);
+	const auto imageInfo = ImageIO::LireImage(INPUT_FILE_NAME);
 	if (not imageInfo)
 	{
 		cerr << format("Erreur de lecture de l'image {}", INPUT_FILE_NAME);
@@ -33,31 +33,28 @@ int main()
 	// Traitement de l'image (1)
 	/////////////////////////////////////////////////////////
 
-	// 1 - Calculer l'histogramme de la photos. implementer la fonction suivante.
-	const HistInfo baseHistInfo = HistogrammeAlgorithms::CalculHistogramme(*imageInfo);
-
 	{
+		// 1 - Calculer l'histogramme de la photos. implementer la fonction suivante.
+		const HistInfo histInfo = HistogrammeAlgorithms::CalculHistogramme(*imageInfo);
+
 		// 2 - Faite une copie des donnees et travailler sur cette copie pour l'etape 3.
-		const HistInfo histInfo = baseHistInfo;
-		const ImageInfo mama = *imageInfo;
+		const ImageInfo baseImageInfo = *imageInfo;
 
 		// 3a - Calculer l'histogramme cumulatif a partir de l'image orignal en sRGB
 		HistogramType histoCumulatif = HistogrammeAlgorithms::CalculHistogrammeCumulatif(histInfo.histogramme);
 
 		// 3b - Appliquer une transformation d'egalisation d'histogramme.
-		const size_t imageSize = static_cast<size_t>(mama.tailleX) * static_cast<size_t>(mama.tailleY);
+		const size_t imageSize = static_cast<size_t>(baseImageInfo.tailleX) * static_cast<size_t>(baseImageInfo.tailleY);
 		HistogrammeAlgorithms::ApplyEqualisation(histoCumulatif, imageSize);
 
 		// 3c - Sauvegarder l'image sous le nom de "barbara_equalized.png"
 		static constexpr auto EQUALISED_OUTPUT_FILE_NAME = "barbara_equalized.png";
-		HistogrammeAlgorithms::EqualiseImage(mama, histoCumulatif);
-		if (not ImageIO::EcrireImage(mama, EQUALISED_OUTPUT_FILE_NAME))
+		HistogrammeAlgorithms::EqualiseImage(baseImageInfo, histoCumulatif);
+		if (not ImageIO::EcrireImage(baseImageInfo, EQUALISED_OUTPUT_FILE_NAME))
 		{
 			cerr << format("Failed to write equalised image in file {}\n", EQUALISED_OUTPUT_FILE_NAME);
 			return EXIT_FAILURE;
 		}
-
-		delete[] mama.data;
 	}
 
 	/////////////////////////////////////////////////////////
@@ -86,9 +83,7 @@ int main()
 	{
 		cerr << format("Failed to write modified image in file {}\n", MODIFIED_OUTPUT_FILE_NAME);
 		return EXIT_FAILURE;
-	} 
-
-	stbi_image_free(imageInfo->data);
+	}
 
 	return EXIT_SUCCESS;
 }

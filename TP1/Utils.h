@@ -11,7 +11,7 @@ namespace Utils
 {
 	[[maybe_unused]] void LogHistogramme(std::string_view message, const HistInfo::HistogramType& histo);
 
-	[[nodiscard]] std::span<ImageInfo::DataType> CreateImageDataSpan(const ImageInfo& imageInfo);
+	[[nodiscard]] std::span<ImageInfo::value_type> CreateImageDataSpan(const ImageInfo& imageInfo);
 }
 
 #endif

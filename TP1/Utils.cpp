@@ -13,7 +13,7 @@ void Utils::LogHistogramme(const std::string_view message, const HistInfo::Histo
 	}
 }
 
-std::span<ImageInfo::DataType> Utils::CreateImageDataSpan(const ImageInfo& imageInfo)
+std::span<ImageInfo::value_type> Utils::CreateImageDataSpan(const ImageInfo& imageInfo)
 {
 	const size_t imageSize = imageInfo.GetDataSize();
 

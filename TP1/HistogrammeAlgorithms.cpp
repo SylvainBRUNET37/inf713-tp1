@@ -72,6 +72,6 @@ void HistogrammeAlgorithms::EqualiseImage(const ImageInfo& baseImageInfo,
 
 	for (auto& imageData : baseImageDatas)
 	{
-		imageData = static_cast<ImageInfo::DataType>(equalisedHisto[imageData]);
+		imageData = static_cast<ImageInfo::value_type>(equalisedHisto[imageData]);
 	}
 }

@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Data.cpp" />
     <ClCompile Include="HistogrammeAlgorithms.cpp" />
     <ClCompile Include="ImageIO.cpp" />
     <ClCompile Include="ImageTransformationAlgorithms.cpp" />
