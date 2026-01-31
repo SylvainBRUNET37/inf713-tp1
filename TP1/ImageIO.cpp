@@ -5,9 +5,7 @@
 #include "stb_image_write.h"
 #include "stb_image.h"
 
-#include "Data.h"
-
-std::optional<ImageInfo> ImageIO::LireImage(const char* const filename)
+std::optional<ImageInfo<uint8_t>> ImageIO::LireImage(const char* const filename)
 {
 	using namespace std;
 
@@ -15,14 +13,14 @@ std::optional<ImageInfo> ImageIO::LireImage(const char* const filename)
 
 	// Nombre de canaux desirer. Si la valeur est 0, retourne le nombre de canaux dans l'image.
 	static constexpr int nbCanauxDesire = 0;
-	ImageInfo imageInfo{};
+	ImageInfo<uint8_t> imageInfo{};
 	imageInfo.data = stbi_load(filename, &imageInfo.tailleX, &imageInfo.tailleY,
 	                           &imageInfo.nbCanaux, nbCanauxDesire);
 
 	return imageInfo.data ? optional{imageInfo} : nullopt;
 }
 
-bool ImageIO::EcrireImage(const ImageInfo& imageInfo, const char* const filename)
+bool ImageIO::EcrireImage(const ImageInfo<uint8_t>& imageInfo, const char* const filename)
 {
 	assert(filename);
 

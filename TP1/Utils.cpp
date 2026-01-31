@@ -12,10 +12,3 @@ void Utils::LogHistogramme(const std::string_view message, const HistInfo::Histo
 		print("Grey channel {} value: {}\n", i++, histoValue);
 	}
 }
-
-std::span<ImageInfo::DataType> Utils::CreateImageDataSpan(const ImageInfo& imageInfo)
-{
-	const size_t imageSize = static_cast<size_t>(imageInfo.tailleX) * static_cast<size_t>(imageInfo.tailleY);
-
-	return std::span{ imageInfo.data, imageSize };
-}

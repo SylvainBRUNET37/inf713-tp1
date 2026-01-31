@@ -10,19 +10,27 @@
 namespace Utils
 {
 	[[maybe_unused]] void LogHistogramme(std::string_view message, const HistInfo::HistogramType& histo);
-	[[nodiscard]] std::span<ImageInfo::DataType> CreateImageDataSpan(const ImageInfo& imageInfo);
 
-	template <typename F>
-	[[nodiscard]] ImageInfo ApplyTranformation(const ImageInfo& baseImageInfo, F&& transformation)
+	template <typename T>
+	[[nodiscard]] std::span<T> CreateImageDataSpan(const ImageInfo<T>& imageInfo)
+	{
+		const size_t imageSize = static_cast<size_t>(imageInfo.tailleX) * static_cast<size_t>(imageInfo.tailleY);
+
+		return std::span{imageInfo.data, imageSize};
+	}
+
+	template <typename OutputImageDataType, typename BaseImageDataType, typename F>
+	[[nodiscard]] ImageInfo<OutputImageDataType> ApplyTranformation(const ImageInfo<BaseImageDataType>& baseImageInfo,
+	                                                                F&& transformation)
 	{
 		using namespace std;
 
-		const ImageInfo newImageInfo{baseImageInfo};
+		const ImageInfo<OutputImageDataType> newImageInfo{};
 
-		const span baseImageDatas = CreateImageDataSpan(baseImageInfo);
-		const span newImageDatas = CreateImageDataSpan(baseImageInfo);
+		const auto baseImageDatas = CreateImageDataSpan(baseImageInfo);
+		const auto newImageDatas = CreateImageDataSpan(newImageInfo);
 
-		for (auto [newImageData, baseImageData] : views::zip(baseImageDatas, newImageDatas))
+		for (auto&& [newImageData, baseImageData] : views::zip(baseImageDatas, newImageDatas))
 		{
 			newImageData = transformation(baseImageData);
 		}
