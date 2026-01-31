@@ -15,7 +15,7 @@ std::optional<ImageInfo> ImageIO::LireImage(const char* const filename)
 	static constexpr int nbCanauxDesire = 0;
 	int tailleX, tailleY, nbCanaux;
 
-	stbi_uc* const data = stbi_load(filename, &tailleX, &tailleY, &nbCanaux, nbCanauxDesire);
+	auto* const data = stbi_load(filename, &tailleX, &tailleY, &nbCanaux, nbCanauxDesire);
 
 	return data ? optional<ImageInfo>{in_place, data, tailleX, tailleY, nbCanaux} : nullopt;
 }
@@ -24,7 +24,7 @@ bool ImageIO::EcrireImage(const ImageInfo& imageInfo, const char* const filename
 {
 	assert(filename);
 
-	constexpr int byteParPixel = 1;
+	static constexpr int byteParPixel = 1;
 	// Taille en byte d 'une ligne horizontale de l' image
 	const int strideEnByte = byteParPixel * imageInfo.tailleX;
 	return stbi_write_png(filename, imageInfo.tailleX,

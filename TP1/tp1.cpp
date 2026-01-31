@@ -4,14 +4,14 @@
 // A mettre le 27 Fevrier 2026
 /////////////////////////////////////////////////////////
 
-#include <print>
 #include <iostream>
+
+#include "stb_image.h"
 
 #include "Data.h"
 #include "ImageIO.h"
 #include "HistogrammeAlgorithms.h"
 #include "ImageTransformationAlgorithms.h"
-#include "stb_image.h"
 
 int main()
 {
@@ -44,8 +44,7 @@ int main()
 		HistogramType histoCumulatif = HistogrammeAlgorithms::CalculHistogrammeCumulatif(histInfo.histogramme);
 
 		// 3b - Appliquer une transformation d'egalisation d'histogramme.
-		const size_t imageSize = static_cast<size_t>(baseImageInfo.tailleX) * static_cast<size_t>(baseImageInfo.tailleY);
-		HistogrammeAlgorithms::ApplyEqualisation(histoCumulatif, imageSize);
+		HistogrammeAlgorithms::ApplyEqualisation(histoCumulatif, baseImageInfo.GetDataSize());
 
 		// 3c - Sauvegarder l'image sous le nom de "barbara_equalized.png"
 		static constexpr auto EQUALISED_OUTPUT_FILE_NAME = "barbara_equalized.png";
@@ -61,28 +60,30 @@ int main()
 	// Traitement de l'image (2)
 	/////////////////////////////////////////////////////////
 
-	// 4a - A partir de l'image original, faite une transformation de sRGB a lineaire (faite la vraie transformation)
-	auto linearisedImage = ImageTransformationAlgorithms::CreateLinearisedImage(*imageInfo);
-
-	// 4b - En lineaire, appliquer une transformation constraste f(a) = a * 1.2 sur le result de 4a
-	static constexpr double CONTRAST = 1.2;
-	for (auto& a : linearisedImage)
-		a *= CONTRAST;
-
-	// 4c - A partir de 4b, en lineaire, appliquer une transformation brillance f(a) = a - 10
-	static constexpr double SHINE = -10.0 / 255.0;
-	for (auto& a : linearisedImage)
-		a += SHINE;
-
-	// 4d - Convertir le result de 4c en sRGB.
-	ImageTransformationAlgorithms::CreateSrbgImage(*imageInfo, linearisedImage);
-
-	// 4e - Sauvegarder le result de 4d sous le nom "barbara_modified.png"
-	static constexpr auto MODIFIED_OUTPUT_FILE_NAME = "barbara_modified.png";
-	if (not ImageIO::EcrireImage(*imageInfo, MODIFIED_OUTPUT_FILE_NAME))
 	{
-		cerr << format("Failed to write modified image in file {}\n", MODIFIED_OUTPUT_FILE_NAME);
-		return EXIT_FAILURE;
+		// 4a - A partir de l'image original, faite une transformation de sRGB a lineaire (faite la vraie transformation)
+		auto linearisedImage = ImageTransformationAlgorithms::CreateLinearisedImage(*imageInfo);
+
+		// 4b - En lineaire, appliquer une transformation constraste f(a) = a * 1.2 sur le result de 4a
+		static constexpr double CONTRAST = 1.2;
+		for (auto& a : linearisedImage)
+			a *= CONTRAST;
+
+		// 4c - A partir de 4b, en lineaire, appliquer une transformation brillance f(a) = a - 10
+		static constexpr double SHINE = -10.0 / 255.0;
+		for (auto& a : linearisedImage)
+			a += SHINE;
+
+		// 4d - Convertir le result de 4c en sRGB.
+		ImageTransformationAlgorithms::CreateSrbgImage(*imageInfo, linearisedImage);
+
+		// 4e - Sauvegarder le result de 4d sous le nom "barbara_modified.png"
+		static constexpr auto MODIFIED_OUTPUT_FILE_NAME = "barbara_modified.png";
+		if (not ImageIO::EcrireImage(*imageInfo, MODIFIED_OUTPUT_FILE_NAME))
+		{
+			cerr << format("Failed to write modified image in file {}\n", MODIFIED_OUTPUT_FILE_NAME);
+			return EXIT_FAILURE;
+		}
 	}
 
 	return EXIT_SUCCESS;

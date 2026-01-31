@@ -14,7 +14,7 @@
 
 HistInfo HistogrammeAlgorithms::CalculHistogramme(const ImageInfo& imageInfo)
 {
-	const auto imageDatas = Utils::CreateImageDataSpan(imageInfo);
+	const std::span imageDatas = Utils::CreateImageDataSpan(imageInfo);
 
 	HistInfo histInfo{};
 	for (const auto data : imageDatas)
@@ -66,10 +66,9 @@ void HistogrammeAlgorithms::ApplyEqualisation(HistInfo::HistogramType& histo, co
 void HistogrammeAlgorithms::EqualiseImage(const ImageInfo& baseImageInfo,
                                                       const HistInfo::HistogramType& equalisedHisto)
 {
+	const std::span baseImageDatas = Utils::CreateImageDataSpan(baseImageInfo);
+
 	// https://pinetools.com/equalize-image to check if it's correct
-
-	auto baseImageDatas = Utils::CreateImageDataSpan(baseImageInfo);
-
 	for (auto& imageData : baseImageDatas)
 	{
 		imageData = static_cast<ImageInfo::value_type>(equalisedHisto[imageData]);

@@ -34,17 +34,17 @@ std::vector<double> ImageTransformationAlgorithms::CreateLinearisedImage(const I
 	static constexpr double MAGIC_NUMBER = 0.04045;
 
 	std::vector<double> result;
-	result.reserve(baseImageInfo.tailleX * baseImageInfo.tailleY * baseImageInfo.nbCanaux);
+	result.reserve(baseImageInfo.GetDataSize());
 
 	const auto newImageDatas = Utils::CreateImageDataSpan(baseImageInfo);
 	for (const uint8_t color : newImageDatas)
 	{
-		const double c = static_cast<double>(color) / 255.0;
+		const double normalisedColor = static_cast<double>(color) / 255.0;
 
 		result.push_back(
-			c <= MAGIC_NUMBER
-			? FirstMagicLinearTransformation(c)
-			: SecondMagicLinearTransformation(c)
+			normalisedColor <= MAGIC_NUMBER
+			? FirstMagicLinearTransformation(normalisedColor)
+			: SecondMagicLinearTransformation(normalisedColor)
 		);
 	}
 
@@ -59,13 +59,11 @@ void ImageTransformationAlgorithms::CreateSrbgImage(const ImageInfo& newImage, c
 
 	for (auto&& [baseData, newData] : std::views::zip(baseImageInfo, newImageDatas))
 	{
-		double srgb =
+		const double srgb =
 			baseData <= MAGIC_NUMBER
 			? FirstMagicSrgbTransformation(baseData)
 			: SecondMagicSrgbTransformation(baseData);
 
-		srgb = std::clamp(srgb, 0.0, 1.0);
-
-		newData = static_cast<uint8_t>(srgb * 255.0);
+		newData = static_cast<uint8_t>(std::clamp(srgb, 0.0, 1.0) * 255.0);
 	}
 }
