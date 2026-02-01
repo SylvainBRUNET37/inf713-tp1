@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <ranges>
 
 #include "Utils.h"
 
@@ -43,8 +42,8 @@ std::vector<double> ImageTransformationAlgorithms::CreateLinearisedImage(const I
 
 		result.push_back(
 			normalisedColor <= MAGIC_NUMBER
-			? FirstMagicLinearTransformation(normalisedColor)
-			: SecondMagicLinearTransformation(normalisedColor)
+				? FirstMagicLinearTransformation(normalisedColor)
+				: SecondMagicLinearTransformation(normalisedColor)
 		);
 	}
 
@@ -53,17 +52,27 @@ std::vector<double> ImageTransformationAlgorithms::CreateLinearisedImage(const I
 
 void ImageTransformationAlgorithms::CreateSrbgImage(const ImageInfo& newImage, const std::vector<double>& baseImageInfo)
 {
+	using namespace std;
+
 	static constexpr double MAGIC_NUMBER = 0.0031308;
 
-	const auto newImageDatas = Utils::CreateImageDataSpan(newImage);
+	auto newImageDatas = Utils::CreateImageDataSpan(newImage);
 
-	for (auto&& [baseData, newData] : std::views::zip(baseImageInfo, newImageDatas))
+	const size_t count =
+		min(baseImageInfo.size(), newImageDatas.size());
+
+	for (size_t i = 0; i < count; ++i)
 	{
+		const double baseData = baseImageInfo[i];
+		auto& newData = newImageDatas[i];
+
 		const double srgb =
 			baseData <= MAGIC_NUMBER
-			? FirstMagicSrgbTransformation(baseData)
-			: SecondMagicSrgbTransformation(baseData);
+				? FirstMagicSrgbTransformation(baseData)
+				: SecondMagicSrgbTransformation(baseData);
 
-		newData = static_cast<uint8_t>(std::clamp(srgb, 0.0, 1.0) * 255.0);
+		newData = static_cast<uint8_t>(
+			clamp(srgb, 0.0, 1.0) * 255.0
+		);
 	}
 }

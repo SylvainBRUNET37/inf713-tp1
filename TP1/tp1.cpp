@@ -4,6 +4,7 @@
 // A mettre le 27 Fevrier 2026
 /////////////////////////////////////////////////////////
 
+#include <format>
 #include <iostream>
 
 #include "stb_image.h"
@@ -16,7 +17,6 @@
 int main()
 {
 	using namespace std;
-	using HistogramType = HistInfo::HistogramType;
 
 	/////////////////////////////////////////////////////////
 	// Charger une image en memoire
@@ -41,14 +41,14 @@ int main()
 		const ImageInfo baseImageInfo = *imageInfo;
 
 		// 3a - Calculer l'histogramme cumulatif a partir de l'image orignal en sRGB
-		HistogramType histoCumulatif = HistogrammeAlgorithms::CalculHistogrammeCumulatif(histInfo.histogramme);
+		HistInfo histoCumulatif = HistogrammeAlgorithms::CalculHistogrammeCumulatif(histInfo.histogramme);
 
 		// 3b - Appliquer une transformation d'egalisation d'histogramme.
 		HistogrammeAlgorithms::ApplyEqualisation(histoCumulatif, baseImageInfo.GetDataSize());
 
 		// 3c - Sauvegarder l'image sous le nom de "barbara_equalized.png"
 		static constexpr auto EQUALISED_OUTPUT_FILE_NAME = "barbara_equalized.png";
-		HistogrammeAlgorithms::EqualiseImage(baseImageInfo, histoCumulatif);
+		HistogrammeAlgorithms::EqualiseImage(baseImageInfo, histoCumulatif.histogramme);
 		if (not ImageIO::EcrireImage(baseImageInfo, EQUALISED_OUTPUT_FILE_NAME))
 		{
 			cerr << format("Failed to write equalised image in file {}\n", EQUALISED_OUTPUT_FILE_NAME);

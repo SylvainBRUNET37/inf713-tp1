@@ -1,20 +1,97 @@
 #include "HistogrammeAlgorithms.h"
 
+#include <algorithm>
 #include <cassert>
-#include <print>
+#include <numeric>
 #include <span>
 #include <ranges>
 
 #include "Data.h"
 #include "Utils.h"
 
-#define LOG_HISTO false
-#define LOG_HISTO_CUMUL false
-#define LOG_HISTO_EQUALISED false
+#define LOG_HISTO true
+#define LOG_HISTO_CUMUL true
+#define LOG_HISTO_EQUALISED true
+
+namespace
+{
+	[[nodiscard]] float ComputeMean(const HistInfo::HistogramType& histogramme)
+	{
+		float meanSum = 0.0f;
+		float count = 0.0f;
+
+		for (size_t i = 0; i < HistInfo::HISTOGRAMME_SIZE; ++i)
+		{
+			const float histoData = static_cast<float>(histogramme[i]);
+
+			meanSum += static_cast<float>(i) * histoData;
+			count += histoData;
+		}
+
+		return meanSum / count;
+	}
+
+	[[nodiscard]] float ComputeVariance(const HistInfo::HistogramType& histogramme, const float mean)
+	{
+		float varianceSum = 0.0f;
+		float count = 0.0f;
+
+		for (size_t i = 0; i < HistInfo::HISTOGRAMME_SIZE; ++i)
+		{
+			const float histoData = static_cast<float>(histogramme[i]);
+			const float meanDiff = static_cast<float>(i) - mean;
+
+			varianceSum += histoData * meanDiff * meanDiff;
+			count += histoData;
+		}
+
+		return varianceSum / count;
+	}
+
+	[[nodiscard]] uint8_t ComputeMin(const HistInfo::HistogramType& histogramme)
+	{
+		for (size_t i = 0; i < HistInfo::HISTOGRAMME_SIZE; ++i)
+		{
+			if (histogramme[i] > 0)
+			{
+				return static_cast<uint8_t>(i);
+			}
+		}
+		
+		assert(false && "Invalid image");
+		return 0;
+	}
+
+	[[nodiscard]] uint8_t ComputeMax(const HistInfo::HistogramType& histogramme)
+	{
+		for (size_t i = HistInfo::HISTOGRAMME_SIZE; i-- > 0;)
+		{
+			if (histogramme[i] > 0)
+			{
+				return static_cast<uint8_t>(i);
+			}
+		}
+
+		assert(false && "Invalid image");
+		return 0;
+	}
+
+	void FillHistInfoMetaData(HistInfo& histInfo)
+	{
+		const auto& histogramme = histInfo.histogramme;
+		histInfo.moyenne = ComputeMean(histogramme);
+		histInfo.variance = ComputeVariance(histogramme, histInfo.moyenne);
+		histInfo.min = ComputeMin(histogramme);
+		histInfo.max = ComputeMax(histogramme);
+
+		const auto maxIt = std::ranges::max_element(histogramme);
+		histInfo.mode = static_cast<uint8_t>(distance(begin(histogramme), maxIt));
+	}
+}
 
 HistInfo HistogrammeAlgorithms::CalculHistogramme(const ImageInfo& imageInfo)
 {
-	const std::span imageDatas = Utils::CreateImageDataSpan(imageInfo);
+	const auto imageDatas = Utils::CreateImageDataSpan(imageInfo);
 
 	HistInfo histInfo{};
 	for (const auto data : imageDatas)
@@ -22,49 +99,58 @@ HistInfo HistogrammeAlgorithms::CalculHistogramme(const ImageInfo& imageInfo)
 		++histInfo.histogramme[data];
 	}
 
+	FillHistInfoMetaData(histInfo);
+
 #if LOG_HISTO
-	Utils::LogHistogramme("Log histo value", histInfo.histogramme);
+	Utils::ConsoleLogHistogramme("Log histo value", histInfo);
+	Utils::FileLogHistogramme("csv/hist_base.csv", histInfo);
 #endif
 
 	return histInfo; // https://azer.io/image-histogram/ to check if it's correct
 }
 
-HistInfo::HistogramType HistogrammeAlgorithms::CalculHistogrammeCumulatif(const HistInfo::HistogramType& baseHisto)
+HistInfo HistogrammeAlgorithms::CalculHistogrammeCumulatif(const HistInfo::HistogramType& baseHisto)
 {
 	size_t i = 0;
-	HistInfo::HistogramType histoCumulatif{};
+	HistInfo histInfo{};
 
-	histoCumulatif[i++] = 0;
+	histInfo.histogramme[i++] = 0;
 	for (; i < baseHisto.size(); ++i)
 	{
-		histoCumulatif[i] = histoCumulatif[i - 1] + baseHisto[i];
+		histInfo.histogramme[i] = histInfo.histogramme[i - 1] + baseHisto[i];
 	}
 
+	FillHistInfoMetaData(histInfo);
+
 #if LOG_HISTO_CUMUL
-	Utils::LogHistogramme("Log histo cumul value", histoCumulatif);
+	Utils::ConsoleLogHistogramme("Log histo cumul value", histInfo);
+	Utils::FileLogHistogramme("csv/hist_cumul.csv", histInfo);
 #endif
 
-	return histoCumulatif;
+	return histInfo;
 }
 
-void HistogrammeAlgorithms::ApplyEqualisation(HistInfo::HistogramType& histo, const size_t imageSize)
+void HistogrammeAlgorithms::ApplyEqualisation(HistInfo& histInfo, const size_t imageSize)
 {
 	static constexpr size_t MAX_VALUE = HistInfo::HISTOGRAMME_SIZE - 1; // K - 1
 
 	assert(imageSize > 0 && "Image size cannot be 0");
 
-	for (auto& histoData : histo)
+	for (auto& histoData : histInfo.histogramme)
 	{
 		histoData = histoData * MAX_VALUE / imageSize;
 	}
 
+	FillHistInfoMetaData(histInfo);
+
 #if LOG_HISTO_EQUALISED
-	Utils::LogHistogramme("Log histo equalised value", histo);
+	Utils::ConsoleLogHistogramme("Log histo equalised value", histInfo);
+	Utils::FileLogHistogramme("csv/hist_eq.csv", histInfo);
 #endif
 }
 
 void HistogrammeAlgorithms::EqualiseImage(const ImageInfo& baseImageInfo,
-                                                      const HistInfo::HistogramType& equalisedHisto)
+                                          const HistInfo::HistogramType& equalisedHisto)
 {
 	const std::span baseImageDatas = Utils::CreateImageDataSpan(baseImageInfo);
 
