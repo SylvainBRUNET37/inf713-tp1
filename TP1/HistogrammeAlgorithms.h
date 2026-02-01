@@ -3,8 +3,9 @@
 
 #include "Data.h"
 
-// https://azer.io/image-histogram/
-// https://pinetools.com/equalize-image
+// To check if it's correct:
+// Historigram: https://azer.io/image-histogram/
+// Equalise: https://pinetools.com/equalize-image
 namespace HistogrammeAlgorithms
 {
 	[[nodiscard]] HistInfo CalculHistogramme(const ImageInfo& imageInfo);

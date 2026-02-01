@@ -8,6 +8,7 @@ void Utils::ConsoleLogHistogramme(const std::string_view message, const HistInfo
 {
 	using namespace std;
 
+	cout << "------------------------------------------------\n";
 	cout << format("{}:\n", message);
 	cout << format("Min: {}\n", histInfo.min);
 	cout << format("Max: {}\n", histInfo.max);
@@ -20,6 +21,7 @@ void Utils::ConsoleLogHistogramme(const std::string_view message, const HistInfo
 	{
 		cout << format("  Grey channel {} value: {}\n", i++, histoValue);
 	}
+	cout << "------------------------------------------------\n";
 }
 
 void Utils::FileLogHistogramme(const char* const filename, const HistInfo& histInfo)

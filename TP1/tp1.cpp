@@ -38,18 +38,18 @@ int main()
 		const HistInfo histInfo = HistogrammeAlgorithms::CalculHistogramme(*imageInfo);
 
 		// 2 - Faite une copie des donnees et travailler sur cette copie pour l'etape 3.
-		const ImageInfo baseImageInfo = *imageInfo;
+		const ImageInfo equalisedImage = *imageInfo;
 
 		// 3a - Calculer l'histogramme cumulatif a partir de l'image orignal en sRGB
 		HistInfo histoCumulatif = HistogrammeAlgorithms::CalculHistogrammeCumulatif(histInfo.histogramme);
 
 		// 3b - Appliquer une transformation d'egalisation d'histogramme.
-		HistogrammeAlgorithms::ApplyEqualisation(histoCumulatif, baseImageInfo.GetDataSize());
+		HistogrammeAlgorithms::ApplyEqualisation(histoCumulatif, equalisedImage.GetDataSize());
 
 		// 3c - Sauvegarder l'image sous le nom de "barbara_equalized.png"
 		static constexpr auto EQUALISED_OUTPUT_FILE_NAME = "barbara_equalized.png";
-		HistogrammeAlgorithms::EqualiseImage(baseImageInfo, histoCumulatif.histogramme);
-		if (not ImageIO::EcrireImage(baseImageInfo, EQUALISED_OUTPUT_FILE_NAME))
+		HistogrammeAlgorithms::EqualiseImage(equalisedImage, histoCumulatif.histogramme);
+		if (not ImageIO::EcrireImage(equalisedImage, EQUALISED_OUTPUT_FILE_NAME))
 		{
 			cerr << format("Failed to write equalised image in file {}\n", EQUALISED_OUTPUT_FILE_NAME);
 			return EXIT_FAILURE;
@@ -62,20 +62,20 @@ int main()
 
 	{
 		// 4a - A partir de l'image original, faite une transformation de sRGB a lineaire (faite la vraie transformation)
-		auto linearisedImage = ImageTransformationAlgorithms::CreateLinearisedImage(*imageInfo);
+		auto linearisedColors = ImageTransformationAlgorithms::ComputeLinearisedColors(*imageInfo);
 
 		// 4b - En lineaire, appliquer une transformation constraste f(a) = a * 1.2 sur le result de 4a
 		static constexpr double CONTRAST = 1.2;
-		for (auto& a : linearisedImage)
-			a *= CONTRAST;
+		for (auto& color : linearisedColors)
+			color *= CONTRAST;
 
 		// 4c - A partir de 4b, en lineaire, appliquer une transformation brillance f(a) = a - 10
-		static constexpr double SHINE = -10.0 / 255.0;
-		for (auto& a : linearisedImage)
-			a += SHINE;
+		static constexpr double SHINE = -10.0 / HistInfo::MAX_COLOR_VALUE;
+		for (auto& pixel : linearisedColors)
+			pixel += SHINE;
 
 		// 4d - Convertir le result de 4c en sRGB.
-		ImageTransformationAlgorithms::CreateSrbgImage(*imageInfo, linearisedImage);
+		ImageTransformationAlgorithms::ApplyCorrections(*imageInfo, linearisedColors);
 
 		// 4e - Sauvegarder le result de 4d sous le nom "barbara_modified.png"
 		static constexpr auto MODIFIED_OUTPUT_FILE_NAME = "barbara_modified.png";

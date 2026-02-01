@@ -106,7 +106,7 @@ HistInfo HistogrammeAlgorithms::CalculHistogramme(const ImageInfo& imageInfo)
 	Utils::FileLogHistogramme("csv/hist_base.csv", histInfo);
 #endif
 
-	return histInfo; // https://azer.io/image-histogram/ to check if it's correct
+	return histInfo;
 }
 
 HistInfo HistogrammeAlgorithms::CalculHistogrammeCumulatif(const HistInfo::HistogramType& baseHisto)
@@ -132,13 +132,11 @@ HistInfo HistogrammeAlgorithms::CalculHistogrammeCumulatif(const HistInfo::Histo
 
 void HistogrammeAlgorithms::ApplyEqualisation(HistInfo& histInfo, const size_t imageSize)
 {
-	static constexpr size_t MAX_VALUE = HistInfo::HISTOGRAMME_SIZE - 1; // K - 1
-
 	assert(imageSize > 0 && "Image size cannot be 0");
 
 	for (auto& histoData : histInfo.histogramme)
 	{
-		histoData = histoData * MAX_VALUE / imageSize;
+		histoData = histoData * HistInfo::MAX_COLOR_VALUE / imageSize;
 	}
 
 	FillHistInfoMetaData(histInfo);
@@ -154,7 +152,6 @@ void HistogrammeAlgorithms::EqualiseImage(const ImageInfo& baseImageInfo,
 {
 	const std::span baseImageDatas = Utils::CreateImageDataSpan(baseImageInfo);
 
-	// https://pinetools.com/equalize-image to check if it's correct
 	for (auto& imageData : baseImageDatas)
 	{
 		imageData = static_cast<ImageInfo::value_type>(equalisedHisto[imageData]);

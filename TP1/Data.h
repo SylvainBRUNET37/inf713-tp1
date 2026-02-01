@@ -7,6 +7,7 @@
 struct HistInfo
 {
 	static constexpr size_t HISTOGRAMME_SIZE = 256;
+	static constexpr size_t MAX_COLOR_VALUE = HISTOGRAMME_SIZE - 1;
 	using HistogramType = std::array<uint32_t, HISTOGRAMME_SIZE>;
 
 	HistogramType histogramme;

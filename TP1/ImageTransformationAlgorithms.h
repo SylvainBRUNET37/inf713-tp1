@@ -7,8 +7,8 @@
 
 namespace ImageTransformationAlgorithms
 {
-	[[nodiscard]] std::vector<double> CreateLinearisedImage(const ImageInfo& imageInfo);
-	void CreateSrbgImage(const ImageInfo& newImage, const std::vector<double>& baseImageInfo);
+	[[nodiscard]] std::vector<double> ComputeLinearisedColors(const ImageInfo& imageInfo);
+	void ApplyCorrections(const ImageInfo& image, const std::vector<double>& correctionDatas);
 }
 
 #endif
