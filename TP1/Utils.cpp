@@ -42,7 +42,7 @@ void Utils::FileLogHistogramme(const char* const filename, const HistInfo& histI
 	outputFile << "\n";
 }
 
-std::span<ImageInfo::value_type> Utils::CreateImageDataSpan(const ImageInfo& imageInfo)
+std::span<uint8_t> Utils::CreateImageDataSpan(const ImageInfo& imageInfo)
 {
 	const size_t imageSize = imageInfo.GetDataSize();
 

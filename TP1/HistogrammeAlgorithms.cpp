@@ -154,6 +154,10 @@ void HistogrammeAlgorithms::EqualiseImage(const ImageInfo& baseImageInfo,
 
 	for (auto& imageData : baseImageDatas)
 	{
-		imageData = static_cast<ImageInfo::value_type>(equalisedHisto[imageData]);
+		imageData = static_cast<uint8_t>(equalisedHisto[imageData]);
 	}
 }
+
+#undef LOG_HISTO_EQUALISED
+#undef LOG_HISTO_CUMUL
+#undef LOG_HISTO

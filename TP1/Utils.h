@@ -11,7 +11,7 @@ namespace Utils
 	[[maybe_unused]] void ConsoleLogHistogramme(std::string_view message, const HistInfo& histInfo);
 	[[maybe_unused]] void FileLogHistogramme(const char* filename, const HistInfo& histInfo);
 
-	[[nodiscard]] std::span<ImageInfo::value_type> CreateImageDataSpan(const ImageInfo& imageInfo);
+	[[nodiscard]] std::span<uint8_t> CreateImageDataSpan(const ImageInfo& imageInfo);
 }
 
 #endif

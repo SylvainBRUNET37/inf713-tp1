@@ -8,6 +8,7 @@ struct HistInfo
 {
 	static constexpr size_t HISTOGRAMME_SIZE = 256;
 	static constexpr size_t MAX_COLOR_VALUE = HISTOGRAMME_SIZE - 1;
+
 	using HistogramType = std::array<uint32_t, HISTOGRAMME_SIZE>;
 
 	HistogramType histogramme;
@@ -20,9 +21,7 @@ struct HistInfo
 
 struct ImageInfo
 {
-	using value_type = uint8_t;
-
-	value_type* data{};
+	uint8_t* data{};
 	int tailleX{}; // nb de pixel en X
 	int tailleY{}; // nb de pixel en Y
 	int nbCanaux{}; // nb de canaux par pixel. Ici 1, parce que l'image est en noir et blanc
@@ -30,7 +29,7 @@ struct ImageInfo
 	ImageInfo() = delete;
 	~ImageInfo() noexcept;
 
-	ImageInfo(value_type* data, int tailleX, int tailleY, int nbCanaux);
+	ImageInfo(uint8_t* data, int tailleX, int tailleY, int nbCanaux);
 
 	ImageInfo(const ImageInfo& other);
 	ImageInfo& operator=(const ImageInfo&) = delete;

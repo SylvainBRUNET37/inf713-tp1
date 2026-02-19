@@ -71,8 +71,8 @@ int main()
 
 		// 4c - A partir de 4b, en lineaire, appliquer une transformation brillance f(a) = a - 10
 		static constexpr double SHINE = -10.0 / HistInfo::MAX_COLOR_VALUE;
-		for (auto& pixel : linearisedColors)
-			pixel += SHINE;
+		for (auto& color : linearisedColors)
+			color += SHINE;
 
 		// 4d - Convertir le result de 4c en sRGB.
 		ImageTransformationAlgorithms::ApplyCorrections(*imageInfo, linearisedColors);
