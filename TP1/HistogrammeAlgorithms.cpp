@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <cassert>
 #include <numeric>
-#include <span>
 #include <ranges>
 
 #include "Data.h"
@@ -57,8 +56,7 @@ namespace
 				return static_cast<uint8_t>(i);
 			}
 		}
-		
-		assert(false && "Invalid image");
+
 		return 0;
 	}
 
@@ -72,7 +70,6 @@ namespace
 			}
 		}
 
-		assert(false && "Invalid image");
 		return 0;
 	}
 
@@ -91,10 +88,8 @@ namespace
 
 HistInfo HistogrammeAlgorithms::CalculHistogramme(const ImageInfo& imageInfo)
 {
-	const auto imageDatas = Utils::CreateImageDataSpan(imageInfo);
-
 	HistInfo histInfo{};
-	for (const auto data : imageDatas)
+	for (const auto data : imageInfo.pixels)
 	{
 		++histInfo.histogramme[data];
 	}
@@ -136,7 +131,8 @@ void HistogrammeAlgorithms::ApplyEqualisation(HistInfo& histInfo, const size_t i
 
 	for (auto& histoData : histInfo.histogramme)
 	{
-		histoData = histoData * HistInfo::MAX_COLOR_VALUE / imageSize;
+		histoData = static_cast<decltype(histInfo.histogramme)::value_type>(
+			histoData * HistInfo::MAX_COLOR_VALUE / imageSize);
 	}
 
 	FillHistInfoMetaData(histInfo);
@@ -147,12 +143,10 @@ void HistogrammeAlgorithms::ApplyEqualisation(HistInfo& histInfo, const size_t i
 #endif
 }
 
-void HistogrammeAlgorithms::EqualiseImage(const ImageInfo& baseImageInfo,
+void HistogrammeAlgorithms::EqualiseImage(ImageInfo& baseImageInfo,
                                           const HistInfo::HistogramType& equalisedHisto)
 {
-	const std::span baseImageDatas = Utils::CreateImageDataSpan(baseImageInfo);
-
-	for (auto& imageData : baseImageDatas)
+	for (auto& imageData : baseImageInfo.pixels)
 	{
 		imageData = static_cast<uint8_t>(equalisedHisto[imageData]);
 	}

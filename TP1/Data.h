@@ -3,6 +3,7 @@
 
 #include <array>
 #include <cstdint>
+#include <vector>
 
 struct HistInfo
 {
@@ -21,21 +22,12 @@ struct HistInfo
 
 struct ImageInfo
 {
-	uint8_t* data{};
+	std::vector<uint8_t> pixels;
 	int tailleX{}; // nb de pixel en X
 	int tailleY{}; // nb de pixel en Y
 	int nbCanaux{}; // nb de canaux par pixel. Ici 1, parce que l'image est en noir et blanc
 
-	ImageInfo() = delete;
-	~ImageInfo() noexcept;
-
-	ImageInfo(uint8_t* data, int tailleX, int tailleY, int nbCanaux);
-
-	ImageInfo(const ImageInfo& other);
-	ImageInfo& operator=(const ImageInfo&) = delete;
-
-	ImageInfo(ImageInfo&&) = delete;
-	ImageInfo& operator=(ImageInfo&&) = delete;
+	ImageInfo(const uint8_t* data, int tailleX, int tailleY, int nbCanaux);
 
 	[[nodiscard]] size_t GetDataSize() const noexcept { return static_cast<size_t>(tailleX) * tailleY * nbCanaux; }
 };

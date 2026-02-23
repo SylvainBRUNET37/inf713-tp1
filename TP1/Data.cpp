@@ -1,29 +1,14 @@
 #include "Data.h"
 
-#include <algorithm>
-
-#include "stb_image.h"
-
-ImageInfo::~ImageInfo() noexcept
+ImageInfo::ImageInfo(const uint8_t* data, const int tailleX, const int tailleY, const int nbCanaux)
+	: tailleX{tailleX},
+	  tailleY{tailleY},
+	  nbCanaux{nbCanaux}
 {
-	stbi_image_free(data);
-}
+	const size_t imageSize =
+		static_cast<size_t>(tailleX) *
+		static_cast<size_t>(tailleY) *
+		static_cast<size_t>(nbCanaux);
 
-ImageInfo::ImageInfo(uint8_t* data, const int tailleX, const int tailleY, const int nbCanaux)
-	: data{data}, tailleX{tailleX}, tailleY{tailleY}, nbCanaux{nbCanaux}
-{
-}
-
-ImageInfo::ImageInfo(const ImageInfo& other)
-	: tailleX{other.tailleX},
-	  tailleY{other.tailleY},
-	  nbCanaux{other.nbCanaux}
-{
-	if (other.data)
-	{
-		const size_t size = GetDataSize();
-
-		data = new uint8_t[size];
-		std::copy_n(other.data, size, data);
-	}
+	pixels.assign(data, data + imageSize);
 }

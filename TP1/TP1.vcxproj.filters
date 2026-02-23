@@ -27,7 +27,7 @@
     <ClCompile Include="HistogrammeAlgorithms.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ImageTransformationAlgorithms.cpp">
+    <ClCompile Include="Algos.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Utils.cpp">
@@ -50,7 +50,7 @@
     <ClInclude Include="HistogrammeAlgorithms.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ImageTransformationAlgorithms.h">
+    <ClInclude Include="Algos.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Utils.h">
