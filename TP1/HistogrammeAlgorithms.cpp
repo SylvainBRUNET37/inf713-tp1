@@ -1,7 +1,7 @@
 #include "HistogrammeAlgorithms.h"
 
 #include <algorithm>
-#include <cassert>
+#include <iostream>
 #include <numeric>
 #include <ranges>
 
@@ -10,7 +10,6 @@
 
 #define LOG_HISTO true
 #define LOG_HISTO_CUMUL true
-#define LOG_HISTO_EQUALISED true
 
 namespace
 {
@@ -98,7 +97,7 @@ HistInfo HistogrammeAlgorithms::CalculHistogramme(const ImageInfo& imageInfo)
 
 #if LOG_HISTO
 	Utils::ConsoleLogHistogramme("Log histo value", histInfo);
-	Utils::FileLogHistogramme("csv/hist_base.csv", histInfo);
+	Utils::FileLogHistogramme("data/hist_base.csv", histInfo);
 #endif
 
 	return histInfo;
@@ -109,7 +108,7 @@ HistInfo HistogrammeAlgorithms::CalculHistogrammeCumulatif(const HistInfo::Histo
 	size_t i = 0;
 	HistInfo histInfo{};
 
-	histInfo.histogramme[i++] = 0;
+	histInfo.histogramme[i++] = baseHisto[0];
 	for (; i < baseHisto.size(); ++i)
 	{
 		histInfo.histogramme[i] = histInfo.histogramme[i - 1] + baseHisto[i];
@@ -119,39 +118,21 @@ HistInfo HistogrammeAlgorithms::CalculHistogrammeCumulatif(const HistInfo::Histo
 
 #if LOG_HISTO_CUMUL
 	Utils::ConsoleLogHistogramme("Log histo cumul value", histInfo);
-	Utils::FileLogHistogramme("csv/hist_cumul.csv", histInfo);
+	Utils::FileLogHistogramme("data/hist_cumul.csv", histInfo);
 #endif
 
 	return histInfo;
 }
 
-void HistogrammeAlgorithms::ApplyEqualisation(HistInfo& histInfo, const size_t imageSize)
-{
-	assert(imageSize > 0 && "Image size cannot be 0");
-
-	for (auto& histoData : histInfo.histogramme)
-	{
-		histoData = static_cast<decltype(histInfo.histogramme)::value_type>(
-			histoData * HistInfo::MAX_COLOR_VALUE / imageSize);
-	}
-
-	FillHistInfoMetaData(histInfo);
-
-#if LOG_HISTO_EQUALISED
-	Utils::ConsoleLogHistogramme("Log histo equalised value", histInfo);
-	Utils::FileLogHistogramme("csv/hist_eq.csv", histInfo);
-#endif
-}
-
 void HistogrammeAlgorithms::EqualiseImage(ImageInfo& baseImageInfo,
                                           const HistInfo::HistogramType& equalisedHisto)
 {
+	const auto imageSize = baseImageInfo.GetDataSize();
 	for (auto& imageData : baseImageInfo.pixels)
 	{
-		imageData = static_cast<uint8_t>(equalisedHisto[imageData]);
+		imageData = static_cast<uint8_t>(equalisedHisto[imageData] * HistInfo::MAX_COLOR_VALUE / imageSize);
 	}
 }
 
-#undef LOG_HISTO_EQUALISED
 #undef LOG_HISTO_CUMUL
 #undef LOG_HISTO

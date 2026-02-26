@@ -8,7 +8,7 @@
 namespace Utils
 {
 	[[maybe_unused]] void ConsoleLogHistogramme(std::string_view message, const HistInfo& histInfo);
-	[[maybe_unused]] void FileLogHistogramme(const char* filename, const HistInfo& histInfo);
+	[[maybe_unused]] void FileLogHistogramme(const char* folderName, const HistInfo& histInfo);
 }
 
 #endif

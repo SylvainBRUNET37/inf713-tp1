@@ -44,14 +44,13 @@ int main()
 		ImageInfo equalisedImage = *imageInfo;
 
 		// 3a - Calculer l'histogramme cumulatif a partir de l'image orignal en sRGB
-		HistInfo histoCumulatif = HistogrammeAlgorithms::CalculHistogrammeCumulatif(histInfo.histogramme);
+		const HistInfo histoCumulatif = HistogrammeAlgorithms::CalculHistogrammeCumulatif(histInfo.histogramme);
 
 		// 3b - Appliquer une transformation d'egalisation d'histogramme.
-		HistogrammeAlgorithms::ApplyEqualisation(histoCumulatif, equalisedImage.GetDataSize());
+		HistogrammeAlgorithms::EqualiseImage(equalisedImage, histoCumulatif.histogramme);
 
 		// 3c - Sauvegarder l'image sous le nom de "barbara_equalized.png"
 		static constexpr auto EQUALISED_OUTPUT_FILE_NAME = "barbara_equalized.png";
-		HistogrammeAlgorithms::EqualiseImage(equalisedImage, histoCumulatif.histogramme);
 		if (not ImageIO::EcrireImage(equalisedImage, EQUALISED_OUTPUT_FILE_NAME))
 		{
 			cerr << format("Failed to write equalised image in file {}\n", EQUALISED_OUTPUT_FILE_NAME);

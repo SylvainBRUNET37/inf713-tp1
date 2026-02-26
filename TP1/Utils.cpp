@@ -25,10 +25,10 @@ void Utils::ConsoleLogHistogramme(const std::string_view message, const HistInfo
 	cout << "------------------------------------------------\n";
 }
 
-void Utils::FileLogHistogramme(const char* const filename, const HistInfo& histInfo)
+void Utils::FileLogHistogramme(const char* const folderName, const HistInfo& histInfo)
 {
-	std::ofstream outputFile{filename};
-	assert(outputFile);
+	std::ofstream outputFile{folderName};
+	assert(outputFile && std::format("Cannot open log folder: {}", folderName).c_str());
 
 	outputFile << static_cast<unsigned int>(histInfo.min) << ","
 		<< static_cast<unsigned int>(histInfo.max) << ","

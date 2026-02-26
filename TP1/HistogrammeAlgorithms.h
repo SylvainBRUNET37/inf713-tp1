@@ -11,7 +11,6 @@ namespace HistogrammeAlgorithms
 	[[nodiscard]] HistInfo CalculHistogramme(const ImageInfo& imageInfo);
 	[[nodiscard]] HistInfo CalculHistogrammeCumulatif(const HistInfo::HistogramType& baseHisto);
 
-	void ApplyEqualisation(HistInfo& histInfo, size_t imageSize);
 	void EqualiseImage(ImageInfo& baseImageInfo, const HistInfo::HistogramType& equalisedHisto);
 }
 

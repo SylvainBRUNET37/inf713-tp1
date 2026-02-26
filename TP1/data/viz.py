@@ -21,12 +21,6 @@ with open(csv_file, "r") as f:
         for v in row:
             data.append(float(v))
 
-# --- Supprimer les 5 premières valeurs ---
-data = data[5:]
-
-if len(data) == 0:
-    raise SystemExit("Pas assez de données après suppression des 5 premières valeurs.")
-
 # --- Statistiques ---
 minimum = min(data)
 maximum = max(data)
@@ -40,11 +34,14 @@ except statistics.StatisticsError:
     mode = "Pas de mode unique"
 
 print("\n--- Statistiques ---")
-print(f"Min      : {minimum}")
-print(f"Max      : {maximum}")
-print(f"Moyenne  : {moyenne}")
-print(f"Variance : {variance}")
-print(f"Mode     : {mode}")
+print(f"Min      : {data[0]}")
+print(f"Max      : {data[1]}")
+print(f"Moyenne  : {data[2]}")
+print(f"Variance : {data[3]}")
+print(f"Mode     : {data[4]}")
+
+# --- Supprimer les 5 premières valeurs ---
+data = data[5:]
 
 # Axe X
 x = range(len(data))
