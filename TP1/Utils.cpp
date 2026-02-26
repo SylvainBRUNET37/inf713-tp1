@@ -1,5 +1,6 @@
 #include "Utils.h"
 
+#include <cassert>
 #include <format>
 #include <fstream>
 #include <iostream>
@@ -27,6 +28,7 @@ void Utils::ConsoleLogHistogramme(const std::string_view message, const HistInfo
 void Utils::FileLogHistogramme(const char* const filename, const HistInfo& histInfo)
 {
 	std::ofstream outputFile{filename};
+	assert(outputFile);
 
 	outputFile << static_cast<unsigned int>(histInfo.min) << ","
 		<< static_cast<unsigned int>(histInfo.max) << ","

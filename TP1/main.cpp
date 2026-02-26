@@ -1,5 +1,7 @@
 /////////////////////////////////////////////////////////
 // NOM: Sylvan Brunet
+// Compiler   : Microsoft (R) C/C++ Optimizing Compiler Version 19.38.33145 for x86
+/// C++ Version: c++20
 // INF 713 - TP 1 
 // A mettre le 27 Fevrier 2026
 /////////////////////////////////////////////////////////

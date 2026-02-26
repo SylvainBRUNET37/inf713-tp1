@@ -18,7 +18,7 @@
     <ClCompile Include="stb_implementation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tp1.cpp">
+    <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ImageIO.cpp">
