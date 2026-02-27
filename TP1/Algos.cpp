@@ -4,29 +4,10 @@
 
 #include "Utils.h"
 
-namespace
+double Algos::LinearToSrgbHigh(const double color)
 {
-	[[nodiscard]] double SrgbToLinearHigh(const double color)
-	{
-		return 1.055 * pow(color, 1.0 / 2.4) - 0.055;
-	}
-	[[nodiscard]] double SrgbToLinearLow(const double color)
-	{
-		return color / 12.92;
-	}
-
-	//
-
-	[[nodiscard]] double LinearToSrgbHigh(const double color)
-	{
-		return pow((color + 0.055) / 1.055, 2.4);
-	}
-	[[nodiscard]] double LinearToSrgbLow(const double color)
-	{
-		return color * 12.92;
-	}
+	return 1.055 * pow(color, 1.0 / 2.4) - 0.055;
 }
-
 
 double Algos::LinearToSrgb(const double normalizedLinearizedColor)
 {
@@ -37,6 +18,11 @@ double Algos::LinearToSrgb(const double normalizedLinearizedColor)
 	return normalizedLinearizedColor <= LINEAR_TO_SRGB_THRESHOLD
 		? LinearToSrgbLow(normalizedLinearizedColor)
 		: LinearToSrgbHigh(normalizedLinearizedColor);
+}
+
+double Algos::SrgbToLinearHigh(const double color)
+{
+	return pow((color + 0.055) / 1.055, 2.4);
 }
 
 double Algos::SrgbToLinear(const double normalizedSrgbColor)
